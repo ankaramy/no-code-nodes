@@ -17,7 +17,7 @@
           "parameters": [
             {
               "name": "Authorization",
-              "value": "Bearer aec-tech-barcelona-2025"
+              "value": "Bearer PUT_YOUR_API_KEY_HERE"
             }
           ]
         },
@@ -162,8 +162,8 @@
               "value": "text/plain"
             },
             {
-              "name": "x-api-key",
-              "value": "AEPcDGeNCw4x6M97zfowL1dzNKkiagNJ7OzyftkO"
+              "name": "PUT_YOUR_API_KEY_HERE",
+              "value": "KEY HERE"
             }
           ]
         },
