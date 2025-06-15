@@ -57,7 +57,51 @@ data = [
 response = requests.post(url, json=data)
 ```
 
-The function will process each building description and return classification results for each entry.
+The function will process each building description and return classification results in the following format:
+
+```json
+{
+  "message": "Building classifications completed",
+  "results": [
+    {
+      "classification": {
+        "all_scores": {
+          "Civic & Government": 0.484900563955307,
+          "Commercial": 0.05030764266848564,
+          "Infrastructure": 0.23255401849746704,
+          "Mixed-use": 0.16752208769321442,
+          "Office": 0.3927899897098541,
+          "Religious": 0.2386707365512848,
+          "Residential": 0.2968970239162445,
+          "Unknown": 0.35176101326942444
+        },
+        "category": "Civic & Government",
+        "confidence": 0.484900563955307
+      },
+      "sentence": "A building named Office of the Parliamentary Counsel."
+    }
+  ]
+}
+```
+
+For each building description, the function returns:
+
+- The original sentence
+- A classification object containing:
+  - `category`: The most likely building category
+  - `confidence`: The confidence score for the selected category
+  - `all_scores`: Confidence scores for all possible categories
+
+The possible categories are:
+
+- Civic & Government
+- Commercial
+- Infrastructure
+- Mixed-use
+- Office
+- Religious
+- Residential
+- Unknown
 
 ## Integration with n8n
 
