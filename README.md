@@ -10,7 +10,7 @@ This repository contains our experiments with n8n workflows and custom nodes for
 
 ## Project Structure
 
-The repository is organized into three main directories:
+The repository is organized into four main directories:
 
 ### 1. n8n-custom-nodes/
 
@@ -37,6 +37,13 @@ Contains n8n workflow graphs and configurations that demonstrate how to:
 - Analyze surface measurements
 - Generate reports and visualizations
 - Integrate with various data sources
+
+### 4. n8n-scripts/
+
+Contains a set of auxillary scripts that we used ot explore integrating various apis in this project. For example, we created a simmple wrapper of the citywerf api to get the 3d geometry data in the grasshopper environment. There was also some exploration in a python notebook attempting to connect to the infrared api. We have not managed to get the API to successfully connect, however we imagine its an implementation issue rather than anything else. If you know whats wrong heko us please :).
+
+- `city-weft-to-infrared`
+- `NodeJsonGeometryBuilder`
 
 ## Prerequisites
 
@@ -74,8 +81,8 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## Support
 
-For support, please open an issue in the GitHub repository.
+For support, please open an issue in the GitHub repository. You can also feel free to contact any of us. We are friendly and are likely on linkedin.
 
 ## AEC Tech Hackathon 2025 Barcelona
 
-This project was developed during the AEC Tech Hackathon 2025 in Barcelona. It represents our team's exploration of using no-code/low-code tools for AEC data processing and analysis. The code and workflows are experimental and may require adjustments to work in your environment.
+This project was developed during the AEC Tech Hackathon 2025 in Barcelona. It represents our team's exploration of using no-code/low-code tools for AEC data processing and analysis. The code and workflows are experimental and may require adjustments to work in your environment. If you have any trouble or one to learn more, please do not hesitate to ask :) we would love to chat and here from what you are doing.
