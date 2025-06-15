@@ -1,0 +1,266 @@
+{
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [0, 0],
+      "id": "9ed28929-6a29-4fef-972e-6b3f54e81385",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.cityweft.com/v1/context",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer aec-tech-barcelona-2025"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"polygon\": [\n    [51.5074, -0.1278],\n    [51.5075, -0.1279],\n    [51.5076, -0.1280],\n    [51.5074, -0.1278]\n  ],\n  \"settings\": {\n      \"defaultRoofType\": \"flat\",\n      \"defaultLevels\": 2,\n      \"defaultLevelHeight\": 4,\n      \"topographyModel\": false\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [300, 0],
+      "id": "f4c90b15-f178-4f2d-89cc-38e0025ba5c5",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "jsCode": "const descriptors = $input.all();\n\n// Helper values\nlet total = descriptors.length;\nlet totalHeight = 0;\nlet heights = [];\nlet minHeight = Infinity;\nlet maxHeight = -Infinity;\n\nconst levelCounts = {};\nconst facadeCounts = {};\n\ndescriptors.forEach(d => {\n  const desc = d.json;\n\n  // Building height stats\n  const height = desc.buildingHeight ?? 0;\n  heights.push(height);\n  totalHeight += height;\n  minHeight = Math.min(minHeight, height);\n  maxHeight = Math.max(maxHeight, height);\n\n  // Building levels distribution\n  const levels = desc.buildingLevels ?? 'unknown';\n  levelCounts[levels] = (levelCounts[levels] || 0) + 1;\n\n  // Facade material distribution\n  const material = desc.buildingFacadeMaterial ?? 'unknown';\n  facadeCounts[material] = (facadeCounts[material] || 0) + 1;\n});\n\n// Final result\nconst averageHeight = total > 0 ? totalHeight / total : 0;\n\nreturn [\n  {\n    json: {\n      totalBuildings: total,\n      averageBuildingHeight: averageHeight,\n      minBuildingHeight: minHeight,\n      maxBuildingHeight: maxHeight,\n      buildingLevelsDistribution: levelCounts,\n      facadeMaterialDistribution: facadeCounts\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [800, -140],
+      "id": "8d8e688c-43fc-451c-9848-0108d718a0d5",
+      "name": "Aggregate Building Stats"
+    },
+    {
+      "parameters": {
+        "jsCode": "const inputItems = $input.all();\nconst descriptors = [];\n\ninputItems.forEach(item => {\n  const geometries = item.json.geometry;\n  \n  if (Array.isArray(geometries)) {\n    geometries.forEach(geom => {\n      if (geom.geometryType === 'meshes' && geom.type === 'buildings' && Array.isArray(geom.meshes)) {\n        geom.meshes.forEach(mesh => {\n          if (mesh.descriptor) {\n            descriptors.push({ json: mesh.descriptor });\n          }\n        });\n      }\n    });\n  }\n});\n\nreturn descriptors;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [540, -140],
+      "id": "6d97e4ee-a857-4c1d-8d64-91d919ad6fc6",
+      "name": "Get Building Data",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const inputItems = $input.all();\nconst descriptors = [];\n\ninputItems.forEach(item => {\n  const geometries = item.json.geometry;\n  \n  if (Array.isArray(geometries)) {\n    geometries.forEach(geom => {\n      if (geom.geometryType === 'meshes' && geom.type === 'surface' && Array.isArray(geom.meshes)) {\n        geom.meshes.forEach(mesh => {\n          if (mesh.descriptor) {\n            descriptors.push({ json: mesh.descriptor });\n          }\n        });\n      }\n    });\n  }\n});\n\nreturn descriptors;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [540, 100],
+      "id": "062cff15-a592-458c-b170-093c91856a69",
+      "name": "Get Surface Data",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const surfaces = $input.all();\n\nlet totalPaths = surfaces.length;\nlet totalWidth = 0;\nlet minWidth = Infinity;\nlet maxWidth = -Infinity;\n\nlet totalLanesForward = 0;\nlet totalLanesBackward = 0;\nlet markedCount = 0;\n\nconst pathTypeDist = {};\nconst pathMaterialDist = {};\nconst intersectionMaterialDist = {};\n\nsurfaces.forEach(s => {\n  const data = s.json;\n\n  // Width stats\n  const width = data.width ?? 0;\n  totalWidth += width;\n  minWidth = Math.min(minWidth, width);\n  maxWidth = Math.max(maxWidth, width);\n\n  // Lane counts\n  totalLanesForward += data.lanesForward ?? 0;\n  totalLanesBackward += data.lanesBackward ?? 0;\n\n  // Marked count\n  if (data.isRoadwayMarked) markedCount++;\n\n  // Path type distribution\n  const pathType = data.pathType ?? 'unknown';\n  pathTypeDist[pathType] = (pathTypeDist[pathType] || 0) + 1;\n\n  // Path material distribution\n  const pathMat = data.pathMaterial ?? 'unknown';\n  pathMaterialDist[pathMat] = (pathMaterialDist[pathMat] || 0) + 1;\n\n  // Intersection material distribution\n  const intMat = data.intersectionMaterial ?? 'unknown';\n  intersectionMaterialDist[intMat] = (intersectionMaterialDist[intMat] || 0) + 1;\n});\n\nconst avgWidth = totalPaths > 0 ? totalWidth / totalPaths : 0;\nconst markedRatio = totalPaths > 0 ? markedCount / totalPaths : 0;\n\nreturn [{\n  json: {\n    totalPaths,\n    averageWidth: avgWidth,\n    minWidth,\n    maxWidth,\n    totalLanesForward,\n    totalLanesBackward,\n    isRoadwayMarkedRatio: markedRatio,\n    pathTypeDistribution: pathTypeDist,\n    pathMaterialDistribution: pathMaterialDist,\n    intersectionMaterialDistribution: intersectionMaterialDist\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [800, 100],
+      "id": "29fa26f9-288f-4514-b468-4daab365faa1",
+      "name": "Aggregate Surface Stats"
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\n\nconst sentences = items.map(item => {\n  const data = item.json;\n  let buildingType = data.buildingType;\n  let buildingName = data.buildingName;\n\n  const hasType = buildingType && buildingType !== 'unknown';\n  const hasName = buildingName && buildingName !== 'unnamed';\n\n  let sentence = \"\";\n\n  if (hasType && hasName) {\n    sentence = `A ${buildingType} building named ${buildingName}.`;\n  } else if (hasType && !hasName) {\n    sentence = `A ${buildingType} building with no specific name.`;\n  } else if (!hasType && hasName) {\n    sentence = `A building named ${buildingName}.`; // Updated logic\n  } else {\n    sentence = \"A building with no specific name.\";\n  }\n\n  return { json: { sentence } };\n});\n\nreturn sentences;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [800, -360],
+      "id": "77eaddf9-ca0d-4232-b954-92321e1c5ba5",
+      "name": "Prepare Building Function Sentences",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\n\n// Wrap all input items into a single output item with a \"sentences\" array\nreturn [\n  {\n    json: {\n      sentences: items.map(item => item.json)\n    }\n  }\n];\n\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1060, -360],
+      "id": "f5b1cd81-1c45-46ba-a8fb-48708a1f47be",
+      "name": "Prepare Building Function Sentences1",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://sdr8euc1.eu-central-1.shapediver.com/api/v2/ticket/f8f4046f5ca1ab3f7c55d454d0589a7bde725825de68372bab94340dbf280f668b733dd800f7dfbb7b11c7390e0816239ecd46439b72457bf75c0728abdc17a43a95adc42c5bdb28f9e763c424d1b71fcdf895ed7745f7988a0b87f2a9c07900157a812e37f0f373e9d6bb7f6b93951a31621cc0f8457031-bd7f151b5c8ae2e58ad5c443466158e0",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [540, 320],
+      "id": "a0f01ff8-2a09-4a36-8f6f-2ea821d3bcd4",
+      "name": "Open Session1"
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "=https://sdr8euc1.eu-central-1.shapediver.com/api/v2/session/{{ $json.sessionId }}/export",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\"exports\":{\"id\":\"17b4b3b21c048133f495b7cd395cea41\"},\"parameters\":{\"f40b53ed-81e6-497b-b5d9-adaf957e8a35\":\"0x496082ff\",\"c45622c0-b671-4ed2-9d37-271cc2c28560\":\"0.1\",\"71af2830-8c88-46ad-be30-5766f23044ee\":\"4\",\"68925860-86ac-415b-a5d7-e91c7a36ba5c\":\"4\",\"82c19a00-e1a2-4922-b161-c7ca05ebc3a9\":\"56\",\"849f4c05-6f38-428d-b61b-b4491290496a\":\"34\",\"774addd7-da74-40c7-a943-a7adaf4bbf06\":\"3000\",\"b4a01372-a9a5-4751-9781-a6b65beae6b4\":\"0x29364aff\",\"e8436a35-ddd6-4691-bb41-6e8b0caa61d7\":\"0.2\",\"e459db97-5300-4c77-9ba5-3ae001470de2\":\"12\",\"b6fa9e60-72f1-4f6a-a574-9bff5334ac2a\":\"0xffffffff\",\"7f9f1642-9ff7-4287-853c-a043a8cce733\":\"56\",\"acd52874-cef6-4fe1-833a-5c7bbb09f24b\":\"0x000000ff\",\"cd6480b4-0e03-4d94-a85a-d3d2ea496b5a\":\"10\",\"b8b756d6-680b-42b8-b315-ee3040fef2ed\":\"0xffffffff\",\"38780b20-7e6d-4010-a6f9-4a98c4cff783\":\"30\",\"e33b792f-836c-48c3-8ee7-28048fcbfd78\":\"0\",\"5f9ec4f5-480d-4ff9-a1d2-a0e0d6726e23\":\"0\",\"ce2ddc23-07de-4a1f-bc7d-37e4f9f288b7\":\"0\",\"0be857ce-f4a3-4224-aa9c-d55c605a7146\":\"0\",\"4c81a73b-66e7-4953-8972-ce60c9ce202e\":\"0\"}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [800, 320],
+      "id": "25ee039e-538a-4b7c-a2b1-d098c7b77d77",
+      "name": "Calculate exports2"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.exports['17b4b3b21c048133f495b7cd395cea41'].content[0].href }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1040, 320],
+      "id": "3f69b7df-fb97-455b-86b4-3b3eea5c06ed",
+      "name": "Calculate exports3"
+    },
+    {
+      "parameters": {
+        "url": "https://europe-southwest1-n8n-server-functions.cloudfunctions.net/get_category_scores",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [{}]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1300, -360],
+      "id": "694b56ab-e642-43f7-b5db-bfee3f23cb3d",
+      "name": "Get Classifications from GCP Function"
+    }
+  ],
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Get Building Data",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get Surface Data",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Open Session1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Building Data": {
+      "main": [
+        [
+          {
+            "node": "Aggregate Building Stats",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Prepare Building Function Sentences",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Surface Data": {
+      "main": [
+        [
+          {
+            "node": "Aggregate Surface Stats",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Building Function Sentences": {
+      "main": [
+        [
+          {
+            "node": "Prepare Building Function Sentences1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Building Function Sentences1": {
+      "main": [
+        [
+          {
+            "node": "Get Classifications from GCP Function",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Open Session1": {
+      "main": [
+        [
+          {
+            "node": "Calculate exports2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculate exports2": {
+      "main": [
+        [
+          {
+            "node": "Calculate exports3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "427f918f8971349a916961503472714c9a28f1a54162d4bfc9f89b934eb54cea"
+  }
+}

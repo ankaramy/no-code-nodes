@@ -1,0 +1,14 @@
+# Google Cloud Function Deployment Commands
+
+# 1. Make sure you're logged in
+gcloud auth login
+
+# 2. Set your project (if not already set)
+gcloud config set project n8n-server-functions
+
+# 3. Enable required APIs (if not already enabled)
+gcloud services enable cloudfunctions.googleapis.com cloudbuild.googleapis.com
+
+# 4. Deploy the function
+# Keep in mind this is my set up, you will need to create your own :)
+gcloud functions deploy get_category_scores --gen2 --runtime=python312 --region=europe-southwest1 --source=. --entry-point=get_category_scores --trigger-http --memory=2048MB --timeout=540s --allow-unauthenticated

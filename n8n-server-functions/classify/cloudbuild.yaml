@@ -1,0 +1,13 @@
+steps:
+  - name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
+    args:
+      - gcloud
+      - functions
+      - deploy
+      - hello_my_friend
+      - --gen2
+      - --runtime=python39
+      - --region=europe-southwest1
+      - --source=.
+      - --entry-point=hello_my_friend
+      - --trigger-http
