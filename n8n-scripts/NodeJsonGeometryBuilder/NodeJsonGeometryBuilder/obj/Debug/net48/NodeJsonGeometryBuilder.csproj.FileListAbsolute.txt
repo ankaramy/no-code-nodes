@@ -1,0 +1,11 @@
+C:\Users\waelext\source\repos\NodeJsonGeometryBuilder\NodeJsonGeometryBuilder\bin\Debug\net48\NodeJsonGeometryBuilder.gha
+C:\Users\waelext\source\repos\NodeJsonGeometryBuilder\NodeJsonGeometryBuilder\bin\Debug\net48\NodeJsonGeometryBuilder.pdb
+C:\Users\waelext\source\repos\NodeJsonGeometryBuilder\NodeJsonGeometryBuilder\bin\Debug\net48\Newtonsoft.Json.dll
+C:\Users\waelext\source\repos\NodeJsonGeometryBuilder\NodeJsonGeometryBuilder\obj\Debug\net48\NodeJsonGeometryBuilder.csproj.AssemblyReference.cache
+C:\Users\waelext\source\repos\NodeJsonGeometryBuilder\NodeJsonGeometryBuilder\obj\Debug\net48\NodeJsonGeometryBuilder.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\waelext\source\repos\NodeJsonGeometryBuilder\NodeJsonGeometryBuilder\obj\Debug\net48\NodeJsonGeometryBuilder.AssemblyInfoInputs.cache
+C:\Users\waelext\source\repos\NodeJsonGeometryBuilder\NodeJsonGeometryBuilder\obj\Debug\net48\NodeJsonGeometryBuilder.AssemblyInfo.cs
+C:\Users\waelext\source\repos\NodeJsonGeometryBuilder\NodeJsonGeometryBuilder\obj\Debug\net48\NodeJsonGeometryBuilder.csproj.CoreCompileInputs.cache
+C:\Users\waelext\source\repos\NodeJsonGeometryBuilder\NodeJsonGeometryBuilder\obj\Debug\net48\NodeJsonGeometryBuilder.csproj.CopyComplete
+C:\Users\waelext\source\repos\NodeJsonGeometryBuilder\NodeJsonGeometryBuilder\obj\Debug\net48\NodeJsonGeometryBuilder.gha
+C:\Users\waelext\source\repos\NodeJsonGeometryBuilder\NodeJsonGeometryBuilder\obj\Debug\net48\NodeJsonGeometryBuilder.pdb
