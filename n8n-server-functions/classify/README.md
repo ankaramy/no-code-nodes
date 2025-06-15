@@ -24,19 +24,40 @@ The function receives building data through HTTP requests, processes it using va
 
 ## Usage
 
-The function can be called via HTTP POST requests with JSON data. Example:
+The function accepts an array of building descriptions through HTTP POST requests. Each building description should be in the following format:
+
+```json
+[
+  {
+    "sentence": "A building with no specific name."
+  },
+  {
+    "sentence": "A building named Office of the Parliamentary Counsel."
+  },
+  {
+    "sentence": "A church building named St Martin-in-the-Fields."
+  }
+]
+```
+
+Example Python code to call the function:
 
 ```python
 import requests
 
 url = "YOUR_FUNCTION_URL"
-data = {
-    "building_data": {
-        # Your building data here
+data = [
+    {
+        "sentence": "A building with no specific name."
+    },
+    {
+        "sentence": "A building named Office of the Parliamentary Counsel."
     }
-}
+]
 response = requests.post(url, json=data)
 ```
+
+The function will process each building description and return classification results for each entry.
 
 ## Integration with n8n
 
