@@ -38,7 +38,7 @@
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [800, -140],
+      "position": [840, -140],
       "id": "8d8e688c-43fc-451c-9848-0108d718a0d5",
       "name": "Aggregate Building Stats"
     },
@@ -70,7 +70,7 @@
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [800, 100],
+      "position": [840, 100],
       "id": "29fa26f9-288f-4514-b468-4daab365faa1",
       "name": "Aggregate Surface Stats"
     },
@@ -87,63 +87,11 @@
     },
     {
       "parameters": {
-        "jsCode": "const items = $input.all();\n\n// Wrap all input items into a single output item with a \"sentences\" array\nreturn [\n  {\n    json: {\n      sentences: items.map(item => item.json)\n    }\n  }\n];\n\n"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [1060, -360],
-      "id": "f5b1cd81-1c45-46ba-a8fb-48708a1f47be",
-      "name": "Prepare Building Function Sentences1",
-      "alwaysOutputData": true
-    },
-    {
-      "parameters": {
         "method": "POST",
-        "url": "https://sdr8euc1.eu-central-1.shapediver.com/api/v2/ticket/f8f4046f5ca1ab3f7c55d454d0589a7bde725825de68372bab94340dbf280f668b733dd800f7dfbb7b11c7390e0816239ecd46439b72457bf75c0728abdc17a43a95adc42c5bdb28f9e763c424d1b71fcdf895ed7745f7988a0b87f2a9c07900157a812e37f0f373e9d6bb7f6b93951a31621cc0f8457031-bd7f151b5c8ae2e58ad5c443466158e0",
-        "sendBody": true,
-        "specifyBody": "json",
-        "jsonBody": "{}",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [540, 320],
-      "id": "a0f01ff8-2a09-4a36-8f6f-2ea821d3bcd4",
-      "name": "Open Session1"
-    },
-    {
-      "parameters": {
-        "method": "PUT",
-        "url": "=https://sdr8euc1.eu-central-1.shapediver.com/api/v2/session/{{ $json.sessionId }}/export",
-        "sendBody": true,
-        "specifyBody": "json",
-        "jsonBody": "{\"exports\":{\"id\":\"17b4b3b21c048133f495b7cd395cea41\"},\"parameters\":{\"f40b53ed-81e6-497b-b5d9-adaf957e8a35\":\"0x496082ff\",\"c45622c0-b671-4ed2-9d37-271cc2c28560\":\"0.1\",\"71af2830-8c88-46ad-be30-5766f23044ee\":\"4\",\"68925860-86ac-415b-a5d7-e91c7a36ba5c\":\"4\",\"82c19a00-e1a2-4922-b161-c7ca05ebc3a9\":\"56\",\"849f4c05-6f38-428d-b61b-b4491290496a\":\"34\",\"774addd7-da74-40c7-a943-a7adaf4bbf06\":\"3000\",\"b4a01372-a9a5-4751-9781-a6b65beae6b4\":\"0x29364aff\",\"e8436a35-ddd6-4691-bb41-6e8b0caa61d7\":\"0.2\",\"e459db97-5300-4c77-9ba5-3ae001470de2\":\"12\",\"b6fa9e60-72f1-4f6a-a574-9bff5334ac2a\":\"0xffffffff\",\"7f9f1642-9ff7-4287-853c-a043a8cce733\":\"56\",\"acd52874-cef6-4fe1-833a-5c7bbb09f24b\":\"0x000000ff\",\"cd6480b4-0e03-4d94-a85a-d3d2ea496b5a\":\"10\",\"b8b756d6-680b-42b8-b315-ee3040fef2ed\":\"0xffffffff\",\"38780b20-7e6d-4010-a6f9-4a98c4cff783\":\"30\",\"e33b792f-836c-48c3-8ee7-28048fcbfd78\":\"0\",\"5f9ec4f5-480d-4ff9-a1d2-a0e0d6726e23\":\"0\",\"ce2ddc23-07de-4a1f-bc7d-37e4f9f288b7\":\"0\",\"0be857ce-f4a3-4224-aa9c-d55c605a7146\":\"0\",\"4c81a73b-66e7-4953-8972-ce60c9ce202e\":\"0\"}}",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [800, 320],
-      "id": "25ee039e-538a-4b7c-a2b1-d098c7b77d77",
-      "name": "Calculate exports2"
-    },
-    {
-      "parameters": {
-        "url": "={{ $json.exports['17b4b3b21c048133f495b7cd395cea41'].content[0].href }}",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [1040, 320],
-      "id": "3f69b7df-fb97-455b-86b4-3b3eea5c06ed",
-      "name": "Calculate exports3"
-    },
-    {
-      "parameters": {
         "url": "https://europe-southwest1-n8n-server-functions.cloudfunctions.net/get_category_scores",
         "sendBody": true,
-        "bodyParameters": {
-          "parameters": [{}]
-        },
+        "specifyBody": "json",
+        "jsonBody": "={{ [$json]}}",
         "options": {}
       },
       "type": "n8n-nodes-base.httpRequest",
@@ -151,6 +99,166 @@
       "position": [1300, -360],
       "id": "694b56ab-e642-43f7-b5db-bfee3f23cb3d",
       "name": "Get Classifications from GCP Function"
+    },
+    {
+      "parameters": {
+        "jsCode": "const facadeMaterials = $json.facadeMaterialDistribution || {};\nconst pathMaterials = $json.pathMaterialDistribution || {};\n\nreturn [{\n  json: {\n    prompt: `\nHere is the urban data:\n\n:office: Building Facade Material Distribution:\n${JSON.stringify(facadeMaterials, null, 2)}\n\n:motorway: Surface Path Material Distribution:\n${JSON.stringify(pathMaterials, null, 2)}\n\n:mag: Instructions:\nPlease identify the most common materials used in buildings and surfaces. If any material clearly appears more than others, state it as the majority. If the distribution is balanced or unknown, explain that too.\n\n:brain: Question:\nCan you summarize what this says about the majority of materials used in the area?\n    `.trim()\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1600, -20],
+      "id": "7a30e23d-bb39-461b-9b20-f3400225070f",
+      "name": "Build AI Prompt"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4.1",
+          "mode": "list",
+          "cachedResultName": "GPT-4.1"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "={{ $json.prompt }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [1860, -20],
+      "id": "6d82686f-5c72-4ed6-82ac-c48653e14182",
+      "name": "OpenAI",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "options": {
+          "fileName": "site-insights"
+        }
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [1600, 160],
+      "id": "2e42eb64-0a7c-43f8-a8df-8461db5458de",
+      "name": "Convert to CSV"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://fbiw2nq5ac.execute-api.eu-central-1.amazonaws.com/development-v1/api/run-analysis",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Infrared-Encoding",
+              "value": "gzip"
+            },
+            {
+              "name": "Content-Type",
+              "value": "text/plain"
+            },
+            {
+              "name": "x-api-key",
+              "value": "AEPcDGeNCw4x6M97zfowL1dzNKkiagNJ7OzyftkO"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "Data",
+              "value": "SDRzSUFBQUFBQUFBQTlXUndZckNNQkNHN3o1RnlkbUJKbW1iMWxlUlBVd3pFd21zamJRQlY4UjNON2E0YTlrOXFQU3ljd2prbS8vL0dXYk9xeXlWd0E0L1Q0TWZJSjRPTERhWk9QcU93SWE5QzMwVTYwazBzdUhBVEVraHkwZEt2bWNiZmVoU1I5ODdPdzU3anIzblFXek9JeHF4VWhXWGhtdlFoVFJRdUlZQVNUc2dzc3F5ckpwYTE0K0cwV1JENk1sM0dHOWgyMW52VnZuNlRTUVhOQzZabGMvSXgxd2cwc3I1NitsTnFIZEgxWDlremVmNi9sMStwS0p5clZOS3B3TzdGcUZRV0VOcktBYzBhR1dyQ2pSNTgrcUJ5OStqUEllcUJZMUxacFgvN2NDcjZiMWNBZDFjSlNZeUJBQUE="
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [540, 580],
+      "id": "b4b5afb2-082c-4358-a86a-891338f10542",
+      "name": "HTTP Request1",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "numberInputs": 3
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [1280, 60],
+      "id": "c7a59ff6-a627-4ee4-b789-d4106607dd6d",
+      "name": "Merge1"
+    },
+    {
+      "parameters": {
+        "select": "user",
+        "user": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "text": "={{ $json }}",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [2220, -20],
+      "id": "13b646f0-470e-49d2-a0ec-0bdcca7e6289",
+      "name": "Slack",
+      "webhookId": "b70b3c3d-676f-464f-b28c-aef73b39ee3a",
+      "credentials": {
+        "slackApi": {
+          "id": "U8EdrSKqN6npYkXa",
+          "name": "Slack account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://sdr8euc1.eu-central-1.shapediver.com/api/v2/ticket/d65c2a7ca4cedb844bba1b8d5807650f750794774c0b71ab0e78f5d3f14b8c31b65fd6fd32d590f7b669c9c430a84355f93728149dcb5178d711d7da1a0904a653ff3f0b2cce70651632fab7cae4a33953c812b4e99c50009afac398f2811f43ead6548cfa554f9f96e97ca300b12dd94b34e6b2d815f876-7a85f35a6a33157ad5bab4c12688d480",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [540, 300],
+      "id": "946b2bbd-1ccf-4f92-9da4-3ddff07769c8",
+      "name": "Open ShapeDiver"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://sdr8euc1.eu-central-1.shapediver.com/api/v2/ticket/d65c2a7ca4cedb844bba1b8d5807650f750794774c0b71ab0e78f5d3f14b8c31b65fd6fd32d590f7b669c9c430a84355f93728149dcb5178d711d7da1a0904a653ff3f0b2cce70651632fab7cae4a33953c812b4e99c50009afac398f2811f43ead6548cfa554f9f96e97ca300b12dd94b34e6b2d815f876-7a85f35a6a33157ad5bab4c12688d480",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [840, 300],
+      "id": "da64a158-1a4e-4979-b83b-08f508f669b4",
+      "name": "Run Remote Grasshopper1"
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\n\nreturn items.slice(31,37)\n\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1060, -360],
+      "id": "f5b1cd81-1c45-46ba-a8fb-48708a1f47be",
+      "name": "Limit sentences",
+      "alwaysOutputData": true
     }
   ],
   "connections": {
@@ -179,7 +287,23 @@
             "index": 0
           },
           {
-            "node": "Open Session1",
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Open ShapeDiver",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate Building Stats": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
             "type": "main",
             "index": 0
           }
@@ -213,44 +337,93 @@
         ]
       ]
     },
+    "Aggregate Surface Stats": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
     "Prepare Building Function Sentences": {
       "main": [
         [
           {
-            "node": "Prepare Building Function Sentences1",
+            "node": "Limit sentences",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Prepare Building Function Sentences1": {
+    "Build AI Prompt": {
+      "main": [
+        [
+          {
+            "node": "OpenAI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI": {
+      "main": [
+        [
+          {
+            "node": "Slack",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "Convert to CSV",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Build AI Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Open ShapeDiver": {
+      "main": [
+        [
+          {
+            "node": "Run Remote Grasshopper1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run Remote Grasshopper1": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Limit sentences": {
       "main": [
         [
           {
             "node": "Get Classifications from GCP Function",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Open Session1": {
-      "main": [
-        [
-          {
-            "node": "Calculate exports2",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Calculate exports2": {
-      "main": [
-        [
-          {
-            "node": "Calculate exports3",
             "type": "main",
             "index": 0
           }
