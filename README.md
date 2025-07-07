@@ -86,3 +86,7 @@ For support, please open an issue in the GitHub repository. You can also feel fr
 ## AEC Tech Hackathon 2025 Barcelona
 
 This project was developed during the AEC Tech Hackathon 2025 in Barcelona. It represents our team's exploration of using no-code/low-code tools for AEC data processing and analysis. The code and workflows are experimental and may require adjustments to work in your environment. If you have any trouble or one to learn more, please do not hesitate to ask :) we would love to chat and here from what you are doing.
+
+![1750504359844](https://github.com/user-attachments/assets/ebdd71c7-3df7-4555-a55c-fb7fe80bed0a)
+
+
